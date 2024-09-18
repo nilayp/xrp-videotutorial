@@ -37,6 +37,8 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    rightDrive.setInverted(true);
   }
 
   /**
@@ -78,6 +80,7 @@ public class Robot extends TimedRobot {
       default:
         // Put default auto code here
         leftDrive.set(.6);
+        rightDrive.set(.6);
         break;
     }
   }
