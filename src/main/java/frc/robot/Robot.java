@@ -85,8 +85,14 @@ public class Robot extends TimedRobot {
       case kDefaultAuto:
       default:
         // Put default auto code here
-        if (mTimer.get() < 3) {
+        if (mTimer.get() < 2.5) { // drive forward 
           drive.tankDrive(.6, .6);
+        } 
+        else if (mTimer.get() < 3) { // turn
+          drive.tankDrive(.7, -.7);
+        }
+        else if (mTimer.get() < 5) { // go backwards
+          drive.tankDrive(-.6, k-.6);
         }
         else {
           drive.tankDrive(0, 0);
