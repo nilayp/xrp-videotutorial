@@ -92,7 +92,7 @@ public class Robot extends TimedRobot {
           drive.tankDrive(.7, -.7);
         }
         else if (mTimer.get() < 5) { // go backwards
-          drive.tankDrive(-.6, k-.6);
+          drive.tankDrive(-.6, -.6);
         }
         else {
           drive.tankDrive(0, 0);
