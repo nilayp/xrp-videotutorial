@@ -11,7 +11,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // my imports
 
 import edu.wpi.first.wpilibj.xrp.XRPMotor;
-
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -27,6 +28,8 @@ public class Robot extends TimedRobot {
 
   private final XRPMotor leftDrive = new XRPMotor(0);
   private final XRPMotor rightDrive = new XRPMotor(1);
+  private final DifferentialDrive drive = new DifferentialDrive(leftDrive, rightDrive);
+  private final Timer mTimer = new Timer();
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -67,6 +70,9 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
 
+    mTimer.start();
+    mTimer.reset();
+
   }
 
   /** This function is called periodically during autonomous. */
@@ -79,8 +85,13 @@ public class Robot extends TimedRobot {
       case kDefaultAuto:
       default:
         // Put default auto code here
-        leftDrive.set(.6);
-        rightDrive.set(.6);
+        if (mTimer.get() < 3) {
+          drive.tankDrive(.6, .6);
+        }
+        else {
+          drive.tankDrive(0, 0);
+        }
+        
         break;
     }
   }
