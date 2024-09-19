@@ -177,9 +177,6 @@ logs/
 # Folder that has CTRE Phoenix Sim device config storage
 ctre_sim/
 /.vscode
-/gradlew
-/gradlew.bat
-/gradle/wrapper/gradle-wrapper.jar
 /networktables.json
 /simgui-ds.json
 /simgui.json
