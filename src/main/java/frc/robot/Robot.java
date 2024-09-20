@@ -8,6 +8,12 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+// my imports
+
+import edu.wpi.first.wpilibj.xrp.XRPMotor;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.Timer;
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -20,6 +26,11 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   
+  private final XRPMotor leftDrive = new XRPMotor(0);
+  private final XRPMotor rightDrive = new XRPMotor(1);
+  private final DifferentialDrive drive = new DifferentialDrive(leftDrive, rightDrive);
+  private final Timer mTimer = new Timer();
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -30,6 +41,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
+    rightDrive.setInverted(true);
   }
 
   /**
@@ -57,6 +69,9 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+
+    mTimer.start();
+    mTimer.reset();
   }
 
   /** This function is called periodically during autonomous. */
@@ -69,6 +84,18 @@ public class Robot extends TimedRobot {
       case kDefaultAuto:
       default:
         // Put default auto code here
+        if (mTimer.get() < 2.5) { // drive forward 
+          drive.tankDrive(.6, .6);
+        } 
+        else if (mTimer.get() < 3) { // turn
+          drive.tankDrive(.7, -.7);
+        }
+        else if (mTimer.get() < 6) { // go backwards
+          drive.tankDrive(-.6, -.6);
+        }
+        else {
+          drive.tankDrive(0, 0);
+        }
         break;
     }
   }
