@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.xrp.XRPMotor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.xrp.XRPServo;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -30,6 +31,7 @@ public class Robot extends TimedRobot {
   private final XRPMotor rightDrive = new XRPMotor(1);
   private final DifferentialDrive drive = new DifferentialDrive(leftDrive, rightDrive);
   private final Timer mTimer = new Timer();
+  private final XRPServo backServo = new XRPServo(4);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -84,17 +86,33 @@ public class Robot extends TimedRobot {
       case kDefaultAuto:
       default:
         // Put default auto code here
-        if (mTimer.get() < 2.5) { // drive forward 
+        if (mTimer.get() < 2.5) { 
+          // drive forward & servo in
+          
           drive.tankDrive(.6, .6);
+          backServo.setPosition(1);
         } 
-        else if (mTimer.get() < 3) { // turn
+        else if (mTimer.get() < 3) { 
+          // turn
+
           drive.tankDrive(.7, -.7);
         }
-        else if (mTimer.get() < 6) { // go backwards
+        else if (mTimer.get() < 6) { 
+          // go backwards
+
           drive.tankDrive(-.6, -.6);
         }
+        else if (mTimer.get() < 7) { 
+          // stop drive & move servo out &
+          
+          drive.tankDrive(0,0);
+          backServo.setPosition(0);
+        }
         else {
+          // move the servo in
+
           drive.tankDrive(0, 0);
+          backServo.setPosition(1);
         }
         break;
     }
