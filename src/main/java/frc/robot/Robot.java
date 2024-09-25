@@ -74,6 +74,7 @@ public class Robot extends TimedRobot {
 
     mTimer.start();
     mTimer.reset();
+    backServo.setPosition(1);
   }
 
   /** This function is called periodically during autonomous. */
@@ -86,33 +87,27 @@ public class Robot extends TimedRobot {
       case kDefaultAuto:
       default:
         // Put default auto code here
-        if (mTimer.get() < 2.5) { 
+        if (mTimer.get() < 2.8) { 
           // drive forward & servo in
-          
-          drive.tankDrive(.6, .6);
-          backServo.setPosition(1);
+          drive.tankDrive(.6, .52);
         } 
-        else if (mTimer.get() < 3) { 
-          // turn
-
-          drive.tankDrive(.7, -.7);
+        else if (mTimer.get() < 3.9) {
+          drive.tankDrive(-.6, .6);
         }
-        else if (mTimer.get() < 6) { 
-          // go backwards
-
+        else if (mTimer.get() < 6.1) {
           drive.tankDrive(-.6, -.6);
         }
-        else if (mTimer.get() < 7) { 
-          // stop drive & move servo out &
-          
-          drive.tankDrive(0,0);
-          backServo.setPosition(0);
+        else if (mTimer.get() < 6.4) {
+          backServo.setPosition(.3);
         }
+        else if (mTimer.get() < 7.4) {
+          backServo.setPosition(1);
+        }
+
         else {
           // move the servo in
 
           drive.tankDrive(0, 0);
-          backServo.setPosition(1);
         }
         break;
     }
