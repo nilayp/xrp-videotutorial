@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.xrp.XRPMotor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.xrp.XRPServo;
+import edu.wpi.first.wpilibj.XboxController;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,6 +33,9 @@ public class Robot extends TimedRobot {
   private final DifferentialDrive drive = new DifferentialDrive(leftDrive, rightDrive);
   private final Timer mTimer = new Timer();
   private final XRPServo backServo = new XRPServo(4);
+  private final XboxController mController = new XboxController(0);
+
+  double driveSpeed = 1;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -119,7 +123,30 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    
+    if (mController.getLeftBumper()){
+      driveSpeed = 1;
+    }
+    else if (mController.getRightBumper()){
+      driveSpeed = .6;
+    }
+    
+    //drive.tankDrive(-mController.getLeftY(), -mController.getRightY());
+    drive.arcadeDrive(-mController.getLeftY() * driveSpeed, -mController.getRightX() * driveSpeed);
+
+    if (mController.getAButton()) {
+      backServo.setPosition(1);
+    }
+    else if (mController.getYButton()) {
+      backServo.setPosition(0);
+    }
+    else if (mController.getBButton()) {
+      backServo.setPosition(.5);
+    }
+
+
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
