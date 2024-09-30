@@ -126,10 +126,10 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     
     if (mController.getLeftBumper()){
-      driveSpeed = 1;
+      driveSpeed = .6;
     }
     else if (mController.getRightBumper()){
-      driveSpeed = .6;
+      driveSpeed = 1;
     }
     
     //drive.tankDrive(-mController.getLeftY(), -mController.getRightY());
@@ -144,8 +144,6 @@ public class Robot extends TimedRobot {
     else if (mController.getBButton()) {
       backServo.setPosition(.5);
     }
-
-
   }
 
   /** This function is called once when the robot is disabled. */
