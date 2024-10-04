@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.xrp.XRPServo;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.xrp.XRPReflectanceSensor;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -23,8 +24,8 @@ import edu.wpi.first.wpilibj.XboxController;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
+  private static final String kTimerAuto = "Timer Auto";
+  private static final String kFollowBlackSensors = "Follow Black Auto w/ Sensors";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   
@@ -37,14 +38,17 @@ public class Robot extends TimedRobot {
 
   double driveSpeed = 1;
 
+  private final XRPReflectanceSensor mReflectanceSensor = new XRPReflectanceSensor();
+  private static final double FOLLOW_BLACK_THRESHOLD = 0.70; // Allowable distance difference (in meters)
+  
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
+    m_chooser.setDefaultOption("Timer Auto", kTimerAuto);
+    m_chooser.addOption("Follow Black with Sensors", kFollowBlackSensors);
     SmartDashboard.putData("Auto choices", m_chooser);
 
     rightDrive.setInverted(true);
@@ -85,10 +89,39 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
+      case kFollowBlackSensors:
+      // Read sensor values
+      double leftSensorValue = mReflectanceSensor.getLeftReflectanceValue();
+      double rightSensorValue = mReflectanceSensor.getRightReflectanceValue(); 
+
+      // Set boolean values based on thresholds
+
+      boolean leftOnLine = (leftSensorValue > FOLLOW_BLACK_THRESHOLD);
+      boolean rightOnLine = (rightSensorValue > FOLLOW_BLACK_THRESHOLD);
+
+      SmartDashboard.putBoolean("leftOnline", leftOnLine);
+      SmartDashboard.putBoolean("rightOnline", rightOnLine);
+    
+      // Line-following logic
+      if (!leftOnLine && !rightOnLine) {
+          // Lost the line, search by spinning in place
+          drive.tankDrive(0.5, -0.5);
+          SmartDashboard.putString("Action", "Spinning in place: " + .5 + -.5);
+      } else if (leftOnLine && !rightOnLine) {
+          // Turn left, slow left motor
+          drive.tankDrive(0.2, 0.6);
+          SmartDashboard.putString("Action", "Turning left L:" + .2 + " R:" + .6); 
+      } else if (!leftOnLine && rightOnLine) {
+          // Turn right, slow right motor
+          drive.tankDrive(0.6, 0.2);
+          SmartDashboard.putString("Action", "Turning right L:" + .6 + " R:" + .2); 
+      } else if (leftOnLine && rightOnLine) {
+          // Move forward
+          drive.tankDrive(0.5, 0.5);
+          SmartDashboard.putString("Action", "Moving forward L:" + .5 + " R:" + .5);
+      }
         break;
-      case kDefaultAuto:
+      case kTimerAuto:
       default:
         // Put default auto code here
         if (mTimer.get() < 2.8) { 
@@ -107,15 +140,13 @@ public class Robot extends TimedRobot {
         else if (mTimer.get() < 7.4) {
           backServo.setPosition(1);
         }
-
         else {
           // move the servo in
-
           drive.tankDrive(0, 0);
         }
         break;
+      }
     }
-  }
 
   /** This function is called once when teleop is enabled. */
   @Override
